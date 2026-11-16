@@ -75,8 +75,6 @@ function loadMyAcceptedRides(driverId) {
             const mapId = `map-${rideId}`;
             const infoId = `info-${rideId}`;
             let stopHtml = ride.stop ? `<p><strong>⏸️ Stop:</strong> ${ride.stop}</p>` : '';
-
-            // Passenger Status Alert (I'm coming)
             let alertHtml = ride.passengerStatus ? `<div style="display:block; margin-bottom:10px; background:#ff9800; color:white; padding:10px; border-radius:8px; font-weight:bold; text-align:center;">🔔 ${ride.passengerStatus}</div>` : '';
 
             rideCard.innerHTML = `
@@ -107,7 +105,6 @@ function loadMyAcceptedRides(driverId) {
             
             myRidesList.appendChild(rideCard);
 
-            // IM HERE BUTTON LOGIC
             document.getElementById(`imHereBtn-${rideId}`).addEventListener('click', async () => {
                 try {
                     await updateDoc(doc(db, "rides", rideId), { driverStatus: "I'm here! Please come out." });
@@ -124,9 +121,20 @@ function loadMyAcceptedRides(driverId) {
 
             const cancelRideBtn = rideCard.querySelector('.btn-cancel-ride');
             cancelRideBtn.addEventListener('click', async () => {
-                if(!confirm("Are you sure you want to cancel?")) return;
+                if(!confirm("Are you sure you want to cancel? The ride will be offered to other drivers.")) return;
                 cancelRideBtn.textContent = "Cancelling..."; cancelRideBtn.disabled = true;
-                try { await updateDoc(doc(db, "rides", rideId), { status: "Cancelled", cancelledBy: "Driver", cancelReason: "Driver cancelled from app" }); } catch (error) {}
+                try { 
+                    // Ride ko cancel nahi karenge, balke wapas Pending karenge taake koi aur le sake
+                    await updateDoc(doc(db, "rides", rideId), { 
+                        status: "Pending", 
+                        driverId: null, 
+                        driverName: null, 
+                        driverMobile: null,
+                        passengerStatus: null,
+                        driverStatus: null,
+                        fare: ride.passengerFare // Wapas passenger ki original offer par le aayenge
+                    }); 
+                } catch (error) { alert(error.message); }
             });
 
             setTimeout(async () => {

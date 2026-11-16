@@ -69,7 +69,6 @@ function loadAvailableRides() {
                 </div>
                 <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
                     <button class="btn-accept" data-id="${rideId}">Send Offer</button>
-                    <button class="btn-cancel" data-id="${rideId}" style="background:#ffebee; color:#d32f2f; border:1px solid #ffcdd2; padding:10px; border-radius:8px; cursor:pointer;">Ignore</button>
                 </div>
             `;
 
@@ -94,12 +93,6 @@ function loadAvailableRides() {
                     acceptBtn.textContent = "Send Offer";
                     acceptBtn.disabled = false;
                 }
-            });
-
-            const cancelBtn = rideCard.querySelector('.btn-cancel');
-            cancelBtn.addEventListener('click', async () => {
-                if(!confirm("Ignore this ride?")) return;
-                try { await updateDoc(doc(db, "rides", rideId), { status: "Cancelled", cancelledBy: "Driver", cancelReason: "Driver ignored" }); } catch (error) {}
             });
 
             ridesList.appendChild(rideCard);

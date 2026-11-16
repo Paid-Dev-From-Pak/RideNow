@@ -49,3 +49,30 @@ a { text-decoration: none; color: var(--primary-color); }
     margin: 0 auto;
     padding: 20px 0;
 }
+
+/* --- MOBILE NAVBAR FIX (NEW) --- */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 15px 10px !important;
+        text-align: center;
+    }
+    .user-info {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        width: 100%;
+        font-size: 13px;
+    }
+    .user-info a {
+        margin-right: 0 !important;
+    }
+    .logo-text {
+        font-size: 22px !important;
+    }
+    .dashboard-container {
+        width: 95% !important;
+        margin: 15px auto !important;
+    }
+}
