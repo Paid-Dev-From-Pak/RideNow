@@ -31,6 +31,7 @@ onAuthStateChanged(auth, (user) => {
 logoutBtn.addEventListener('click', () => signOut(auth).then(() => window.location.href = "index.html"));
 
 function loadStats(driverId) {
+    // Driver ki saari rides fetch karein
     const q = query(collection(db, "rides"), where("driverId", "==", driverId));
 
     onSnapshot(q, (snapshot) => {
@@ -38,6 +39,8 @@ function loadStats(driverId) {
         
         if (snapshot.empty) {
             statsList.innerHTML = "<p style='text-align: center; color: #777;'>No rides history found.</p>";
+            totalRidesEl.textContent = "0";
+            totalEarningsEl.textContent = "Rs. 0";
             return;
         }
 
@@ -48,19 +51,31 @@ function loadStats(driverId) {
         snapshot.forEach(doc => {
             const ride = doc.data();
             ridesArray.push(ride);
-            totalFare += (ride.fare || 0);
-            rideCount++;
+
+            // SIRF COMPLETED RIDES ko Earnings aur Total count mein shamil karein
+            if (ride.status === 'Completed') {
+                totalFare += (ride.fare || 0);
+                rideCount++;
+            }
         });
 
         // Stats update karein
         totalRidesEl.textContent = rideCount;
         totalEarningsEl.textContent = `Rs. ${totalFare}`;
 
-        // History list show karein
-        ridesArray.forEach((ride) => {
+        // History list show karein (Nayi rides pehle)
+        ridesArray.reverse().forEach((ride) => {
             const rideCard = document.createElement('div');
             rideCard.className = 'ride-item';
-            rideCard.style.borderLeftColor = "var(--primary-color)";
+            
+            // Status ke hisaab se border color
+            if(ride.status === 'Completed') {
+                rideCard.style.borderLeftColor = "var(--primary-color)"; // Green
+            } else if(ride.status === 'Cancelled') {
+                rideCard.style.borderLeftColor = "#d32f2f"; // Red
+            } else {
+                rideCard.style.borderLeftColor = "#ff9800"; // Orange
+            }
             
             rideCard.innerHTML = `
                 <div class="ride-details" style="width: 100%;">
@@ -69,7 +84,15 @@ function loadStats(driverId) {
                     ${ride.stop ? `<p><strong>⏸️ Stop:</strong> ${ride.stop}</p>` : ''}
                     <p><strong>🏁 To:</strong> ${ride.drop}</p>
                     <p><strong>⏰ Time:</strong> ${ride.time}</p>
-                    <p style="color: var(--primary-color); font-weight: bold; margin-top: 10px;">Fare Earned: Rs. ${ride.fare || 0}</p>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <span style="font-weight:bold; color:${ride.status === 'Completed' ? 'var(--primary-color)' : '#d32f2f'}; text-transform:uppercase;">
+                            ${ride.status}
+                        </span>
+                        <span style="font-weight:bold; color: #333;">
+                            Fare: Rs. ${ride.fare || 0}
+                        </span>
+                    </div>
                 </div>
             `;
             statsList.appendChild(rideCard);
