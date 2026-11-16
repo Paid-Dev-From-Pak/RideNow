@@ -18,6 +18,7 @@ const db = getFirestore(app);
 const logoutBtn = document.getElementById('logoutBtn');
 const totalRidesEl = document.getElementById('totalRides');
 const totalEarningsEl = document.getElementById('totalEarnings');
+const cancelledRidesEl = document.getElementById('cancelledRides');
 const statsList = document.getElementById('statsList');
 
 onAuthStateChanged(auth, (user) => {
@@ -31,7 +32,6 @@ onAuthStateChanged(auth, (user) => {
 logoutBtn.addEventListener('click', () => signOut(auth).then(() => window.location.href = "index.html"));
 
 function loadStats(driverId) {
-    // Driver ki saari rides fetch karein
     const q = query(collection(db, "rides"), where("driverId", "==", driverId));
 
     onSnapshot(q, (snapshot) => {
@@ -41,40 +41,43 @@ function loadStats(driverId) {
             statsList.innerHTML = "<p style='text-align: center; color: #777;'>No rides history found.</p>";
             totalRidesEl.textContent = "0";
             totalEarningsEl.textContent = "Rs. 0";
+            cancelledRidesEl.textContent = "0";
             return;
         }
 
         let totalFare = 0;
-        let rideCount = 0;
+        let completedCount = 0;
+        let cancelledCount = 0;
         let ridesArray = [];
 
         snapshot.forEach(doc => {
             const ride = doc.data();
             ridesArray.push(ride);
 
-            // SIRF COMPLETED RIDES ko Earnings aur Total count mein shamil karein
             if (ride.status === 'Completed') {
                 totalFare += (ride.fare || 0);
-                rideCount++;
+                completedCount++;
+            } else if (ride.status === 'Cancelled') {
+                cancelledCount++;
             }
         });
 
         // Stats update karein
-        totalRidesEl.textContent = rideCount;
+        totalRidesEl.textContent = completedCount;
         totalEarningsEl.textContent = `Rs. ${totalFare}`;
+        cancelledRidesEl.textContent = cancelledCount;
 
         // History list show karein (Nayi rides pehle)
         ridesArray.reverse().forEach((ride) => {
             const rideCard = document.createElement('div');
             rideCard.className = 'ride-item';
             
-            // Status ke hisaab se border color
             if(ride.status === 'Completed') {
-                rideCard.style.borderLeftColor = "var(--primary-color)"; // Green
+                rideCard.style.borderLeftColor = "var(--primary-color)";
             } else if(ride.status === 'Cancelled') {
-                rideCard.style.borderLeftColor = "#d32f2f"; // Red
+                rideCard.style.borderLeftColor = "#d32f2f";
             } else {
-                rideCard.style.borderLeftColor = "#ff9800"; // Orange
+                rideCard.style.borderLeftColor = "#ff9800";
             }
             
             rideCard.innerHTML = `

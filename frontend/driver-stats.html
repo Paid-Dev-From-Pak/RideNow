@@ -9,7 +9,10 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <style>
         .stats-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 20px;
         }
         .stat-card {
             background: white; padding: 20px; border-radius: 12px; text-align: center;
@@ -25,6 +28,7 @@
         <div class="user-info">
             <a href="driver.html" class="nav-link">New Requests</a>
             <a href="driver-my-rides.html" class="nav-link">My Rides</a>
+            <a href="driver-stats.html" class="nav-link">My Stats</a>
             <button id="logoutBtn" class="btn-logout">Logout</button>
         </div>
     </nav>
@@ -33,17 +37,22 @@
         <!-- Stats Section -->
         <div class="stats-grid">
             <div class="stat-card">
-                <p>Total Rides Completed</p>
+                <p>Completed Rides</p>
                 <h2 id="totalRides">0</h2>
             </div>
             <div class="stat-card" style="border-top-color: #ff9800;">
                 <p>Total Earnings</p>
                 <h2 id="totalEarnings" style="color: #ff9800;">Rs. 0</h2>
             </div>
+            <!-- NAYA CARD: Cancelled Rides -->
+            <div class="stat-card" style="border-top-color: #d32f2f;">
+                <p>Cancelled Rides</p>
+                <h2 id="cancelledRides" style="color: #d32f2f;">0</h2>
+            </div>
         </div>
 
         <div class="welcome-card">
-            <h3>All Accepted Rides</h3>
+            <h3>Ride History</h3>
         </div>
 
         <div id="statsList" class="rides-list">
