@@ -33,6 +33,14 @@ let currentDriverId = null;
 let selectedRating = 0;
 let myMobile = "";
 
+// --- FARE INCREASE / DECREASE LOGIC ---
+window.adjustFare = function(amount) {
+    let currentFare = parseInt(customFareInput.value) || minimumFareAllowed;
+    let newFare = currentFare + amount;
+    if (newFare < minimumFareAllowed) newFare = minimumFareAllowed;
+    customFareInput.value = newFare;
+}
+
 // --- PROFILE PICTURE LOGIC ---
 window.uploadProfilePic = async function(input) {
     if (!input.files || !input.files[0]) return;
@@ -195,7 +203,6 @@ function checkActiveRide(userId) {
                     document.getElementById('showStop').textContent = ride.stop;
                 }
 
-                // Driver Status Alert (I'm here)
                 if(ride.driverStatus) {
                     document.getElementById('driverStatusAlert').style.display = 'block';
                     document.getElementById('driverStatusAlert').textContent = `🔔 ${ride.driverStatus}`;
@@ -217,7 +224,6 @@ function checkActiveRide(userId) {
                     mapContainer.style.display = 'block';
                     if(currentDriverId) fetchDriverRating(currentDriverId);
                     
-                    // Show Driver Contact Details
                     document.getElementById('driverContact').style.display = 'block';
                     document.getElementById('driverPhone').href = `tel:${ride.driverMobile}`;
                     document.getElementById('driverPhone').innerHTML = `📞 Call ${ride.driverMobile}`;
@@ -261,7 +267,6 @@ function checkActiveRide(userId) {
     });
 }
 
-// I'M COMING BUTTON
 document.getElementById('imComingBtn').addEventListener('click', async () => {
     if(!currentActiveRideId) return;
     try {
@@ -270,7 +275,6 @@ document.getElementById('imComingBtn').addEventListener('click', async () => {
     } catch(error) {}
 });
 
-// --- BIDDING ACCEPT/REJECT LOGIC ---
 window.acceptDriverOffer = async function() {
     if(!currentActiveRideId) return;
     try {

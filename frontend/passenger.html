@@ -10,27 +10,65 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <style>
         /* Map Modal Styles */
-        .map-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .map-modal-content { background: white; width: 90%; max-width: 600px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
-        .map-header { padding: 10px 15px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #eee; z-index: 10; background: white; }
+        .map-modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; 
+        }
+        .map-modal-content { 
+            background: white; width: 90%; max-width: 600px; border-radius: 12px; 
+            overflow: hidden; display: flex; flex-direction: column; position: relative; 
+        }
+        .map-header { 
+            padding: 10px 15px; display: flex; flex-direction: column; gap: 10px; 
+            border-bottom: 1px solid #eee; z-index: 10; background: white; 
+        }
         .map-header-top { display: flex; justify-content: space-between; align-items: center; }
         .map-header h3 { margin: 0; font-size: 16px; color: #333; }
         .close-map { background: none; border: none; font-size: 24px; cursor: pointer; color: #ff4d4d; }
-        .map-search-box { display: flex; gap: 10px; }
-        .map-search-box input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .map-search-box button { background: var(--primary-color); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        
+        /* Search Box Fix */
+        .map-search-box { display: flex; gap: 8px; width: 100%; box-sizing: border-box; }
+        .map-search-box input { flex: 1; min-width: 0; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .map-search-box button { background: var(--primary-color); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        
         #picker-map { height: 400px; width: 100%; z-index: 1; }
-        .crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); font-size: 40px; z-index: 500; pointer-events: none; color: #ff4d4d; text-shadow: 0px 2px 5px rgba(0,0,0,0.5); margin-top: 20px; }
+        .crosshair { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); 
+            font-size: 40px; z-index: 500; pointer-events: none; color: #ff4d4d; 
+            text-shadow: 0px 2px 5px rgba(0,0,0,0.5); margin-top: 20px; 
+        }
         .map-footer { padding: 15px; text-align: right; background: white; border-top: 1px solid #eee; z-index: 10; }
+        
         .input-with-btn { display: flex; gap: 10px; }
         .input-with-btn input { flex: 1; }
         .btn-map { background: #eee; color: #333; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .btn-map:hover { background: #ddd; }
-        .fare-box { background: #e8f5e9; border: 1px solid #c8e6c9; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .fare-input-group { display: flex; align-items: center; gap: 10px; }
-        .fare-input-group input { width: 100px; padding: 10px; font-size: 16px; font-weight: bold; border: 1px solid #c8e6c9; border-radius: 8px; color: #2e7d32; }
+        
+        /* Fare Box with +/- buttons */
+        .fare-box { 
+            background: #e8f5e9; border: 1px solid #c8e6c9; padding: 15px; border-radius: 8px; 
+            margin-bottom: 15px; display: flex; justify-content: space-between; 
+            align-items: center; flex-wrap: wrap; gap: 10px; 
+        }
+        .fare-input-group { 
+            display: flex; align-items: center; gap: 5px; background: white; 
+            padding: 5px; border-radius: 8px; border: 1px solid #c8e6c9; 
+        }
+        .fare-input-group input { 
+            width: 70px; padding: 5px; font-size: 16px; font-weight: bold; 
+            border: none; text-align: center; color: #2e7d32; outline: none; 
+        }
+        .fare-btn { 
+            background: #c8e6c9; color: #2e7d32; border: none; width: 30px; height: 30px; 
+            border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer; 
+            display: flex; justify-content: center; align-items: center; transition: 0.2s; 
+        }
+        .fare-btn:hover { background: #a5d6a7; }
+        
         .bike-banner { background: #e3f2fd; color: #1a73e8; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; margin-bottom: 20px; border: 1px solid #bbdefb; }
         .btn-remove-stop { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; border-radius: 8px; padding: 0 15px; cursor: pointer; }
+        
+        /* Modals */
         .cancel-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1100; justify-content: center; align-items: center; }
         .cancel-box { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; }
         .cancel-box select { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; }
@@ -39,7 +77,6 @@
         .stars { font-size: 40px; color: #ddd; cursor: pointer; margin: 15px 0; }
         .stars span.active { color: #ffc107; }
         
-        /* Naye Styles Contact aur Alerts ke liye */
         .driver-contact-box { display: none; background: #f0f4c3; border: 1px solid #dce775; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; }
         .driver-contact-box a { display: inline-block; background: var(--primary-color); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 10px; }
         .status-alert { display: none; background: #ff9800; color: white; padding: 10px; border-radius: 8px; font-weight: bold; margin-bottom: 15px; text-align: center; animation: pulse 2s infinite; }
@@ -53,7 +90,6 @@
         <div class="user-info">
             <a href="passenger-history.html" class="nav-link" style="margin-right: 15px;">My History</a>
             <div style="position: relative; cursor: pointer;" onclick="document.getElementById('profileUpload').click()">
-                <!-- YEH HAI NAYA FIXED LINK -->
                 <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=00c853&color=fff&rounded=true" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color);">
                 <input type="file" id="profileUpload" style="display: none;" accept="image/*" onchange="uploadProfilePic(this)">
             </div>
@@ -63,9 +99,12 @@
     </nav>
 
     <div class="dashboard-container">
-        <div class="welcome-card"><h3>Where are you going today?</h3><p>Fast and affordable bike rides.</p></div>
+        <div class="welcome-card">
+            <h3>Where are you going today?</h3>
+            <p>Fast and affordable bike rides.</p>
+        </div>
 
-        <!-- Ride Request Form -->
+        <!-- Ride Form -->
         <div class="request-card">
             <div class="bike-banner">🏍️ Bike Ride</div>
             <form id="rideForm">
@@ -85,6 +124,7 @@
                         <button type="button" class="btn-remove-stop" onclick="removeStop()">✕</button>
                     </div>
                 </div>
+                
                 <button type="button" id="addStopBtn" style="background:none; border:none; color:var(--primary-color); font-weight:600; cursor:pointer; margin-bottom:15px; text-align:left;">+ Add a Stop</button>
 
                 <div class="input-group">
@@ -106,8 +146,10 @@
                         <small id="fareBreakdown" style="color:#666; font-size:12px;">Min: Rs. 60</small>
                     </div>
                     <div class="fare-input-group">
-                        <span style="font-weight:bold; color:#2e7d32;">Rs.</span>
+                        <button type="button" class="fare-btn" onclick="adjustFare(-10)">-</button>
+                        <span style="font-weight:bold; color:#2e7d32; font-size:14px;">Rs.</span>
                         <input type="number" id="customFare" placeholder="0" required>
+                        <button type="button" class="fare-btn" onclick="adjustFare(10)">+</button>
                     </div>
                 </div>
 
@@ -117,10 +159,8 @@
 
         <!-- Active Ride Details -->
         <div id="activeRide" class="active-ride-card" style="display: none;">
-            
-            <!-- Driver Status Alert ("I'm here") -->
             <div id="driverStatusAlert" class="status-alert"></div>
-
+            
             <h3>Ride Status: <span id="rideStatus">Searching for rider...</span></h3>
             <p><strong>Rider Rating:</strong> <span id="driverRatingDisplay">N/A</span></p>
             <p><strong>From:</strong> <span id="showPickup"></span></p>
@@ -128,7 +168,6 @@
             <p><strong>To:</strong> <span id="showDrop"></span></p>
             <p style="margin-top: 10px; font-size: 18px;"><strong>Offer: <span id="showFare" style="color:var(--primary-color);"></span></strong></p>
             
-            <!-- Driver Contact Box -->
             <div id="driverContact" class="driver-contact-box">
                 <h4>Rider is on the way!</h4>
                 <p>Contact your rider for coordination.</p>
@@ -136,7 +175,6 @@
                 <button id="imComingBtn" style="display:block; width:100%; margin-top:10px; padding:10px; border-radius:8px; border:1px solid #4caf50; background:white; color:#4caf50; font-weight:bold; cursor:pointer;">🏃 I'm Coming</button>
             </div>
 
-            <!-- Bidding Offer Box -->
             <div id="driverOfferBox" style="display:none; background:#fff3e0; padding:15px; border-radius:8px; border:1px solid #ffe0b2; margin-bottom:15px; margin-top:15px;">
                 <h4 style="color:#e65100; margin-bottom:5px;">New Offer from Rider!</h4>
                 <p id="offerText" style="font-weight:bold; color:#333; font-size:16px;"></p>
@@ -146,12 +184,10 @@
                 </div>
             </div>
 
-            <!-- Map Container -->
             <div id="map-container" style="display: none; margin-top: 15px;">
                 <div id="map" style="height: 250px; width: 100%; border-radius: 8px; border: 1px solid #ddd;"></div>
             </div>
 
-            <!-- Cancel Button -->
             <div style="margin-top: 15px;">
                 <button id="cancelRideBtn" style="background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">Cancel Ride</button>
             </div>
@@ -167,7 +203,7 @@
                     <button class="close-map" onclick="closeMapPicker()">&times;</button>
                 </div>
                 <div class="map-search-box">
-                    <input type="text" id="mapSearchInput" placeholder="Search area or city..." onkeypress="handleSearchEnter(event)">
+                    <input type="text" id="mapSearchInput" placeholder="Search area..." onkeypress="handleSearchEnter(event)">
                     <button onclick="searchLocation()">Search</button>
                 </div>
             </div>
@@ -185,7 +221,7 @@
     <div id="cancelModal" class="cancel-modal">
         <div class="cancel-box">
             <h3 style="margin-bottom: 15px;">Cancel Ride</h3>
-            <p style="font-size: 14px; margin-bottom: 10px; color:#555;">Please select a reason for cancellation:</p>
+            <p style="font-size: 14px; margin-bottom: 10px; color:#555;">Select reason:</p>
             <select id="cancelReason">
                 <option value="Driver is too far">Driver is too far</option>
                 <option value="Changed my mind">Changed my mind</option>
