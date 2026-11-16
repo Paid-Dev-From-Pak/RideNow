@@ -15,9 +15,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const BASE_FARE = 60;
-const PER_KM_RATE = 30;
-
 const userNameDisplay = document.getElementById('userName');
 const logoutBtn = document.getElementById('logoutBtn');
 const rideForm = document.getElementById('rideForm');
@@ -34,6 +31,7 @@ let minimumFareAllowed = 0;
 let currentActiveRideId = null;
 let currentDriverId = null;
 let selectedRating = 0;
+let myMobile = "";
 
 // --- PROFILE PICTURE LOGIC ---
 window.uploadProfilePic = async function(input) {
@@ -57,8 +55,9 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         userNameDisplay.textContent = user.displayName || user.email.split('@')[0];
         const userSnap = await getDoc(doc(db, "users", user.uid));
-        if (userSnap.exists() && userSnap.data().profilePic) {
-            document.getElementById('userAvatar').src = userSnap.data().profilePic;
+        if (userSnap.exists()) {
+            if(userSnap.data().profilePic) document.getElementById('userAvatar').src = userSnap.data().profilePic;
+            myMobile = userSnap.data().mobile || "";
         }
         checkActiveRide(user.uid);
     } else window.location.href = "index.html";
@@ -196,6 +195,14 @@ function checkActiveRide(userId) {
                     document.getElementById('showStop').textContent = ride.stop;
                 }
 
+                // Driver Status Alert (I'm here)
+                if(ride.driverStatus) {
+                    document.getElementById('driverStatusAlert').style.display = 'block';
+                    document.getElementById('driverStatusAlert').textContent = `🔔 ${ride.driverStatus}`;
+                } else {
+                    document.getElementById('driverStatusAlert').style.display = 'none';
+                }
+
                 if(ride.status === "Offer Pending") {
                     statusText.textContent = "Rider sent an offer!";
                     statusText.style.color = "orange";
@@ -209,6 +216,11 @@ function checkActiveRide(userId) {
                     statusText.style.color = "var(--primary-color)";
                     mapContainer.style.display = 'block';
                     if(currentDriverId) fetchDriverRating(currentDriverId);
+                    
+                    // Show Driver Contact Details
+                    document.getElementById('driverContact').style.display = 'block';
+                    document.getElementById('driverPhone').href = `tel:${ride.driverMobile}`;
+                    document.getElementById('driverPhone').innerHTML = `📞 Call ${ride.driverMobile}`;
                     
                     if (!myMap) {
                         setTimeout(async () => {
@@ -225,12 +237,14 @@ function checkActiveRide(userId) {
                     }
                 } else if(ride.status === "Completed") {
                     document.getElementById('driverOfferBox').style.display = 'none';
+                    document.getElementById('driverContact').style.display = 'none';
                     statusText.textContent = "Ride Completed!";
                     statusText.style.color = "green";
                     mapContainer.style.display = 'none';
                     if(!ride.rating) document.getElementById('ratingModal').style.display = 'flex';
                 } else {
                     document.getElementById('driverOfferBox').style.display = 'none';
+                    document.getElementById('driverContact').style.display = 'none';
                     statusText.textContent = "Searching for rider...";
                     statusText.style.color = "orange";
                     mapContainer.style.display = 'none';
@@ -247,6 +261,15 @@ function checkActiveRide(userId) {
     });
 }
 
+// I'M COMING BUTTON
+document.getElementById('imComingBtn').addEventListener('click', async () => {
+    if(!currentActiveRideId) return;
+    try {
+        await updateDoc(doc(db, "rides", currentActiveRideId), { passengerStatus: "I'm coming! Please wait." });
+        alert("Rider ko bata diya gaya hai!");
+    } catch(error) {}
+});
+
 // --- BIDDING ACCEPT/REJECT LOGIC ---
 window.acceptDriverOffer = async function() {
     if(!currentActiveRideId) return;
@@ -261,12 +284,8 @@ window.rejectDriverOffer = async function() {
         const rideRef = doc(db, "rides", currentActiveRideId);
         const rideSnap = await getDoc(rideRef);
         const ride = rideSnap.data();
-        // Reset to Pending and revert fare to original
         await updateDoc(rideRef, { 
-            status: "Pending", 
-            driverId: null, 
-            driverName: null, 
-            fare: ride.passengerFare 
+            status: "Pending", driverId: null, driverName: null, driverMobile: null, fare: ride.passengerFare 
         });
     } catch (error) { alert("Error rejecting offer."); }
 }
@@ -333,7 +352,7 @@ rideForm.addEventListener('submit', async (e) => {
 
     try {
         await addDoc(collection(db, "rides"), {
-            passengerId: user.uid, passengerName: user.displayName || "Passenger",
+            passengerId: user.uid, passengerName: user.displayName || "Passenger", passengerMobile: myMobile,
             rideType: "Bike", pickup: pickup, stop: stop || null, drop: drop, time: time, 
             fare: offeredFare, passengerFare: offeredFare, minFare: minimumFareAllowed, status: "Pending", createdAt: serverTimestamp()
         });

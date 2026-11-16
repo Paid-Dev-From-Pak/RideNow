@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCAn-9Nm7LUtu086mFPJe5JPFG-sm5s58w",
@@ -19,9 +19,13 @@ const driverName = document.getElementById('driverName');
 const logoutBtn = document.getElementById('logoutBtn');
 const ridesList = document.getElementById('ridesList');
 
-onAuthStateChanged(auth, (user) => {
+let myMobile = "";
+
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         driverName.textContent = user.displayName || user.email.split('@')[0];
+        const userSnap = await getDoc(doc(db, "users", user.uid));
+        if(userSnap.exists()) myMobile = userSnap.data().mobile || "";
         loadAvailableRides(); 
     } else {
         window.location.href = "index.html";
@@ -51,8 +55,8 @@ function loadAvailableRides() {
             rideCard.innerHTML = `
                 <div class="ride-details">
                     <h4>Passenger: ${ride.passengerName}</h4>
-                    <p style="font-size: 15px; margin-bottom: 8px; color: #2e7d32; font-weight: bold;">🏍️ Bike | Passenger Offer: Rs. ${ride.fare || 0}</p>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 8px;">Passenger Min Limit: Rs. ${ride.minFare || 0}</p>
+                    <p style="font-size: 15px; margin-bottom: 8px; color: #2e7d32; font-weight: bold;">🏍️ Bike | Offer: Rs. ${ride.fare || 0}</p>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 8px;">Min Limit: Rs. ${ride.minFare || 0}</p>
                     <p><strong>📍 Pickup:</strong> ${ride.pickup}</p>
                     ${ride.stop ? `<p><strong>⏸️ Stop:</strong> ${ride.stop}</p>` : ''}
                     <p><strong>🏁 Drop:</strong> ${ride.drop}</p>
@@ -73,16 +77,16 @@ function loadAvailableRides() {
             acceptBtn.addEventListener('click', async () => {
                 const counterFare = parseInt(document.getElementById(`counter-${rideId}`).value);
                 if(!counterFare) return alert("Enter valid price.");
-                if(counterFare < ride.minFare) return alert(`Minimum limit Rs. ${ride.minFare} se kam offer nahi kar sakte!`);
+                if(counterFare < ride.minFare) return alert(`Min limit Rs. ${ride.minFare} se kam offer nahi kar sakte!`);
 
                 acceptBtn.textContent = "Sending...";
                 acceptBtn.disabled = true;
                 try {
-                    const rideRef = doc(db, "rides", rideId);
-                    await updateDoc(rideRef, {
-                        status: "Offer Pending", // Changed from Accepted to Offer Pending
+                    await updateDoc(doc(db, "rides", rideId), {
+                        status: "Offer Pending",
                         driverId: auth.currentUser.uid,
                         driverName: auth.currentUser.displayName || "Rider",
+                        driverMobile: myMobile,
                         fare: counterFare 
                     });
                 } catch (error) {
@@ -95,10 +99,7 @@ function loadAvailableRides() {
             const cancelBtn = rideCard.querySelector('.btn-cancel');
             cancelBtn.addEventListener('click', async () => {
                 if(!confirm("Ignore this ride?")) return;
-                cancelBtn.textContent = "Ignoring...";
-                try {
-                    await updateDoc(doc(db, "rides", rideId), { status: "Cancelled", cancelledBy: "Driver", cancelReason: "Driver ignored" });
-                } catch (error) { alert("Error: " + error.message); }
+                try { await updateDoc(doc(db, "rides", rideId), { status: "Cancelled", cancelledBy: "Driver", cancelReason: "Driver ignored" }); } catch (error) {}
             });
 
             ridesList.appendChild(rideCard);

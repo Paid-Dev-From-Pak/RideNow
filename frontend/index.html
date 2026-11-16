@@ -7,6 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/auth.css">
+    <style>
+        .role-selector { display: flex; gap: 10px; margin-top: 5px; margin-bottom: 15px; }
+        .role-option { flex: 1; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .role-option input[type="radio"] { display: none; }
+        .role-option.selected { border-color: var(--primary-color); background: #e8f5e9; font-weight: 600; color: var(--primary-color); }
+    </style>
 </head>
 <body>
     <div class="auth-container">
@@ -30,11 +36,28 @@
                 <p class="toggle-text">Don't have an account? <a href="#" id="showSignup">Sign Up</a></p>
             </form>
 
-            <!-- Signup Form (Initially Hidden) -->
+            <!-- Signup Form -->
             <form id="signupForm" style="display: none;">
+                <div class="input-group">
+                    <label>Register As:</label>
+                    <div class="role-selector">
+                        <label class="role-option selected" id="rolePassenger">
+                            <input type="radio" name="userRole" value="passenger" checked>
+                            🏍️ Passenger
+                        </label>
+                        <label class="role-option" id="roleDriver">
+                            <input type="radio" name="userRole" value="driver">
+                            🏍️ Driver
+                        </label>
+                    </div>
+                </div>
                 <div class="input-group">
                     <label for="signupName">Full Name</label>
                     <input type="text" id="signupName" placeholder="Enter your name" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupMobile">Mobile Number</label>
+                    <input type="tel" id="signupMobile" placeholder="e.g. 03001234567" required>
                 </div>
                 <div class="input-group">
                     <label for="signupEmail">Email</label>
