@@ -151,7 +151,7 @@ async function updateFareEstimate() {
         const routeData = await calculateDistance(pickup, stop, drop);
         if (routeData) {
             try {
-                const response = await fetch(`http://localhost:8080/api/fare?distance=${routeData.distanceKm}`);
+                const response = await fetch(`https://ridenow-backend-yclb.onrender.com/api/fare?distance=${routeData.distanceKm}`);
                 const javaData = await response.json();
                 minimumFareAllowed = javaData.fare;
                 fareBreakdown.textContent = `Java Min Fare: Rs. ${minimumFareAllowed} (${routeData.distanceKm.toFixed(1)} km)`;
