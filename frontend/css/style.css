@@ -1,0 +1,51 @@
+/* Reset & Global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f4f7f6;
+    color: #333;
+    min-height: 100vh;
+}
+
+:root {
+    --primary-color: #00c853; /* Uber Green type */
+    --primary-dark: #009624;
+    --text-dark: #212121;
+    --text-light: #757575;
+    --bg-white: #ffffff;
+}
+
+/* Typography */
+h1, h2, h3 { color: var(--text-dark); }
+a { text-decoration: none; color: var(--primary-color); }
+
+/* Buttons */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Container */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+}

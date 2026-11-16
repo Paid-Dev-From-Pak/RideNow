@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideNow - My Stats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white; padding: 20px; border-radius: 12px; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary-color);
+        }
+        .stat-card h2 { font-size: 28px; margin: 10px 0 5px; color: var(--primary-color); }
+        .stat-card p { color: var(--text-light); font-size: 14px; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2 class="logo-text">Ride<span>Now</span> Driver</h2>
+        <div class="user-info">
+            <a href="driver.html" class="nav-link">New Requests</a>
+            <a href="driver-my-rides.html" class="nav-link">My Rides</a>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Stats Section -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p>Total Rides Completed</p>
+                <h2 id="totalRides">0</h2>
+            </div>
+            <div class="stat-card" style="border-top-color: #ff9800;">
+                <p>Total Earnings</p>
+                <h2 id="totalEarnings" style="color: #ff9800;">Rs. 0</h2>
+            </div>
+        </div>
+
+        <div class="welcome-card">
+            <h3>All Accepted Rides</h3>
+        </div>
+
+        <div id="statsList" class="rides-list">
+            <p style="text-align: center; color: #777;">Loading stats...</p>
+        </div>
+    </div>
+
+    <script type="module" src="js/driver-stats.js"></script>
+</body>
+</html>

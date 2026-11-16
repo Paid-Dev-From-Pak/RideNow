@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideNow - Driver</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h2 class="logo-text">Ride<span>Now</span> Driver</h2>
+        <div class="user-info">
+            <!-- My Rides ka link yahan add kar diya hai -->
+            <a href="driver-my-rides.html" class="nav-link">My Rides</a>
+            <a href="driver-stats.html" class="nav-link">My Stats</a>
+            <span id="driverName">Loading...</span>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="welcome-card">
+            <h3>Available Ride Requests</h3>
+            <p>Accept a ride to start earning.</p>
+        </div>
+
+        <!-- Rides List Container -->
+        <div id="ridesList" class="rides-list">
+            <p style="text-align: center; color: #777;">Loading available rides...</p>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module" src="js/driver.js"></script>
+</body>
+</html>

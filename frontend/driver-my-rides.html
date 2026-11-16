@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideNow - My Accepted Rides</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <nav class="navbar">
+        <h2 class="logo-text">Ride<span>Now</span> Driver</h2>
+        <div class="user-info">
+            <a href="driver.html" style="margin-right: 15px; font-size: 14px; font-weight: 600;">New Requests</a>
+            <a href="driver-stats.html" class="nav-link">My Stats</a>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="welcome-card">
+            <h3>My Accepted Rides</h3>
+            <p>These are the rides you have accepted.</p>
+        </div>
+
+        <div id="myRidesList" class="rides-list">
+            <p style="text-align: center; color: #777;">Loading your rides...</p>
+        </div>
+    </div>
+
+    <script type="module" src="js/driver-my-rides.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</body>
+</html>
